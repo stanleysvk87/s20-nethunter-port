@@ -7,13 +7,20 @@ Target device and ROM:
 - Lineage kernel commit `88a015858b05`
 
 `z3s` has no official NetHunter support — Kali's own reference kernel target
-is the Note20 Ultra Exynos 990 (`c2s`). This repo documents a from-scratch
-kernel port plus a full "Linux handheld" build on top of it: native Kali
-NetHunter chroot, a working Android desktop-hybrid mode driving an external
-monitor, USB HID/ADB/serial gadget, and remote SSH access. There is
-essentially nothing published online for this specific device/kernel
-combination — the goal of writing it up this thoroughly is that it might
-save someone else with the same phone a lot of trial and error.
+is the Note20 Ultra Exynos 990 (`c2s`). A NetHunter kernel for this exact
+chip did exist before ([WhimsyGiga/Samsung-S20-ultra-exynos-nethunter-kernel](https://github.com/WhimsyGiga/Samsung-S20-ultra-exynos-nethunter-kernel)),
+but it targets Android 13, flashes via TWRP rather than Magisk, and its own
+README lists only partial functionality (Bluetooth with caveats, one tested
+Wi-Fi adapter, USB Arsenal not working). People running the current
+LineageOS 23 / Android 16 branch on this device have publicly asked for a
+working NetHunter kernel for their version and not found one (see the XDA
+LineageOS-21-for-z3s thread). This repo picks that gap up for the current
+OS branch: a from-scratch kernel port validated with checksums for every
+build, Magisk-based (not TWRP), plus a full "Linux handheld" build on top
+of it — native Kali NetHunter chroot, a working Android desktop-hybrid mode
+driving an external monitor (which nothing published elsewhere for this
+device combines with the rest), USB HID/ADB/serial gadget, and remote SSH
+access.
 
 > **Safety note**: flashing a pre-built `boot.img` from this repo onto a
 > *different* `z3s` unit or a different LineageOS/ROM build is not
