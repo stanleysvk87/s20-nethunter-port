@@ -72,6 +72,23 @@ Flashing is intentionally outside these scripts. A build artifact is not safe
 to flash until its kernel, DTB, DTBO, boot image layout, and rollback images
 have all been validated for `z3s`.
 
+## Downloads
+
+Pre-built, flashed-and-validated boot images are attached to the
+[GitHub Releases](https://github.com/stanleysvk87/s20-nethunter-port/releases)
+page (each 45-62 MB, over GitHub's 100 MB git-blob limit, so they're release
+assets rather than tracked files):
+
+- `boot-z3s-dexfix-RUNNING.img` — the build currently flashed and running on
+  the phone (`659f32a1c5351b5bc4b97a7f4eb1b0f4835b965ad63a4d8dee9544ffb9ffdb12`).
+- `boot-z3s-lineage23.2-nethunter-config-only.img` /
+  `boot-z3s-lineage23.2-nethunter-magisk-v30.7.img` — the two intermediate,
+  individually-validated milestones described below.
+- `stock-boot.img` / `stock-dtbo.img` / `stock-vbmeta.img` — the original
+  images pulled from this exact phone before any modification, for rollback.
+
+Read the safety note at the top of this file before flashing any of these.
+
 ## Kernel build variants
 
 The kernel went through several incremental builds after the initial
