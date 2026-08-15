@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>S20 NetHunter — poľná príručka</title>
+<style>
+  :root {
+    --bg: #EEF1EC;
+    --surface: #FFFFFF;
+    --surface-2: #E4E8E1;
+    --text: #16201B;
+    --text-muted: #4C5A50;
+    --border: #D2D8CC;
+    --accent: #146B5C;
+    --accent-soft: #DCEAE5;
+    --amber: #9C6B14;
+    --amber-soft: #F1E6CE;
+    --rust: #9B4222;
+    --rust-soft: #F3E1D8;
+    --code-bg: #16201B;
+    --code-text: #E7EFE9;
+    --code-accent: #7FD9C4;
+    --shadow: 0 1px 2px rgba(20, 30, 24, 0.06), 0 4px 16px rgba(20, 30, 24, 0.05);
+    --font-body: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --font-head: "Arial Narrow", "Roboto Condensed", "Segoe UI Semibold", var(--font-body);
+    --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #101512;
+      --surface: #171D19;
+      --surface-2: #1E2621;
+      --text: #E7EEE9;
+      --text-muted: #93A296;
+      --border: #2B342E;
+      --accent: #58C6AC;
+      --accent-soft: #1E3830;
+      --amber: #E3AC4C;
+      --amber-soft: #3A2E15;
+      --rust: #E28560;
+      --rust-soft: #3A2318;
+      --code-bg: #0B0F0D;
+      --code-text: #DCEAE2;
+      --code-accent: #7FD9C4;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #101512;
+    --surface: #171D19;
+    --surface-2: #1E2621;
+    --text: #E7EEE9;
+    --text-muted: #93A296;
+    --border: #2B342E;
+    --accent: #58C6AC;
+    --accent-soft: #1E3830;
+    --amber: #E3AC4C;
+    --amber-soft: #3A2E15;
+    --rust: #E28560;
+    --rust-soft: #3A2318;
+    --code-bg: #0B0F0D;
+    --code-text: #DCEAE2;
+    --code-accent: #7FD9C4;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    line-height: 1.55;
+    font-size: 16px;
+  }
+  a { color: var(--accent); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .shell {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 24px 96px;
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 48px;
+  }
+  @media (max-width: 880px) {
+    .shell { grid-template-columns: 1fr; }
+  }
+
+  header.hero {
+    grid-column: 1 / -1;
+    padding: 56px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 8px; height: 8px;
+    background: var(--accent);
+    display: inline-block;
+    border-radius: 1px;
+  }
+  h1 {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: clamp(2rem, 4.2vw, 3.1rem);
+    letter-spacing: -0.01em;
+    margin: 0 0 14px;
+    text-wrap: balance;
+  }
+  .hero p.lede {
+    max-width: 66ch;
+    color: var(--text-muted);
+    font-size: 1.08rem;
+    margin: 0 0 24px;
+  }
+  .devmeta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 28px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .devmeta strong { color: var(--text); font-weight: 600; }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 20px;
+    margin-top: 22px;
+    font-size: 12.5px;
+    color: var(--text-muted);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+  nav.toc {
+    align-self: start;
+    position: sticky;
+    top: 24px;
+  }
+  nav.toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 2px solid var(--border);
+  }
+  nav.toc li { margin: 0; }
+  nav.toc a {
+    display: block;
+    padding: 7px 0 7px 16px;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 14px;
+    border-left: 2px solid transparent;
+    margin-left: -2px;
+  }
+  nav.toc a:hover { color: var(--accent); border-left-color: var(--accent); }
+  nav.toc .toc-num {
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-right: 8px;
+  }
+  @media (max-width: 880px) {
+    nav.toc { position: static; margin-bottom: 8px; }
+    nav.toc ol { columns: 2; column-gap: 24px; }
+  }
+
+  main { min-width: 0; }
+
+  section.cat {
+    padding: 44px 0;
+    border-bottom: 1px solid var(--border);
+    scroll-margin-top: 20px;
+  }
+  section.cat:last-of-type { border-bottom: none; }
+
+  .cat-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+  }
+  .cat-num {
+    font-family: var(--font-mono);
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 700;
+  }
+  h2 {
+    font-family: var(--font-head);
+    font-size: 1.55rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .cat-role {
+    color: var(--text-muted);
+    max-width: 72ch;
+    margin: 4px 0 28px;
+  }
+
+  .tool {
+    padding: 22px 0;
+    border-top: 1px solid var(--border);
+  }
+  .tool:first-of-type { border-top: none; }
+
+  .tool-head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .tool-name {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 15.5px;
+    color: var(--text);
+  }
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .tag.overene { background: var(--accent-soft); color: var(--accent); }
+  .tag.repo { background: var(--surface-2); color: var(--text-muted); }
+  .tag.hw { background: var(--amber-soft); color: var(--amber); }
+  .tag.appka { background: var(--surface-2); color: var(--text-muted); }
+
+  .tool-body { max-width: 76ch; }
+  .tool-body p { margin: 0 0 8px; }
+  .tool-body p.what { color: var(--text); }
+  .tool-body p.when { color: var(--text-muted); font-size: 14.5px; }
+  .tool-body p.when strong.lbl { color: var(--text); font-weight: 700; }
+  .tool-body code.inline {
+    font-family: var(--font-mono);
+    background: var(--surface-2);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.92em;
+  }
+
+  pre.cmd {
+    margin: 10px 0 10px;
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 12px 14px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    line-height: 1.5;
+    box-shadow: var(--shadow);
+  }
+  pre.cmd .prompt { color: var(--code-accent); }
+  pre.cmd .comment { color: #8CA396; }
+
+  ol.steps {
+    margin: 10px 0 4px;
+    padding-left: 0;
+    list-style: none;
+    counter-reset: step;
+  }
+  ol.steps li {
+    counter-increment: step;
+    position: relative;
+    padding: 3px 0 3px 30px;
+    font-size: 14.5px;
+    color: var(--text-muted);
+  }
+  ol.steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 3px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-soft);
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .note {
+    margin-top: 10px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    background: var(--rust-soft);
+    color: var(--rust);
+    border-left: 3px solid var(--rust);
+  }
+  .note strong { font-weight: 700; }
+  .note.ok {
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 3px 9px 3px 8px;
+    border-radius: 999px;
+    margin-top: 8px;
+    font-weight: 700;
+  }
+  .badge.priama { background: var(--accent-soft); color: var(--accent); }
+  .badge.ciastocna { background: var(--amber-soft); color: var(--amber); }
+  .badge.chyba { background: var(--rust-soft); color: var(--rust); }
+
+  .limits {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px 26px;
+    box-shadow: var(--shadow);
+  }
+  .limits ul { margin: 0; padding-left: 20px; }
+  .limits li { margin-bottom: 8px; }
+  .limits li:last-child { margin-bottom: 0; }
+
+  .tablewrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+  table.rh {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 760px;
+    background: var(--surface);
+    font-size: 14.5px;
+  }
+  table.rh th, table.rh td {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  table.rh th {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    background: var(--surface-2);
+  }
+  table.rh tr:last-child td { border-bottom: none; }
+  table.rh td.zhoda { white-space: nowrap; }
+  table.rh td.modul { color: var(--text-muted); font-size: 13.5px; }
+
+  footer {
+    grid-column: 1 / -1;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 13px;
+    font-family: var(--font-mono);
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <header class="hero">
+    <div class="eyebrow">Osobná referencia · Kali NetHunter na Androide</div>
+    <h1>S20 NetHunter — poľná príručka</h1>
+    <p class="lede">
+      Celý arzenál Kali NetHunter — appka aj CLI — na čo je každá vec, kedy sa v reálnom
+      teste použije, ako sa spúšťa a typický postup. Zostavené z oficiálnej štruktúry
+      NetHunter projektu a doplnené o presné poznámky z vlastného S20 Ultra buildu (Mímir
+      build-notes, stav k 11.8.2026).
+    </p>
+    <div class="devmeta">
+      <span><strong>Zariadenie</strong> Samsung SM-G988B (z3s), Exynos 990</span>
+      <span><strong>OS</strong> LineageOS 23.2 / Android 16</span>
+      <span><strong>Kernel</strong> 4.19.325-cip126-st10-nethunter-z3s</span>
+      <span><strong>Chroot</strong> kali-nethunter-full 2026.3.2</span>
+      <span><strong>Root</strong> Magisk 30.7</span>
+    </div>
+    <div class="legend">
+      <span><span class="tag overene">overené</span> reálne spustené a funkčné na tomto S20</span>
+      <span><span class="tag repo">kali repo</span> dostupné cez apt, na S20 priamo nezmienené/netestované</span>
+      <span><span class="tag hw">potrebuje HW</span> vyžaduje adaptér/kernel funkciu, ktorú S20 zatiaľ nemá</span>
+      <span><span class="tag appka">appka</span> položka v NetHunter GUI appke</span>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <ol>
+      <li><a href="#zaklad"><span class="toc-num">00</span>Základná platforma</a></li>
+      <li><a href="#gui"><span class="toc-num">01</span>NetHunter appka (GUI)</a></li>
+      <li><a href="#wifi"><span class="toc-num">02</span>Wi-Fi útoky</a></li>
+      <li><a href="#wardriving"><span class="toc-num">03</span>Wardriving a GPS</a></li>
+      <li><a href="#sdr"><span class="toc-num">04</span>Rádio / SDR</a></li>
+      <li><a href="#siet"><span class="toc-num">05</span>Sieťový prieskum</a></li>
+      <li><a href="#web"><span class="toc-num">06</span>Web aplikácie</a></li>
+      <li><a href="#bluetooth"><span class="toc-num">07</span>Bluetooth</a></li>
+      <li><a href="#hid"><span class="toc-num">08</span>USB HID / fyzické (CLI)</a></li>
+      <li><a href="#kontajnery"><span class="toc-num">09</span>Kontajnery</a></li>
+      <li><a href="#infra"><span class="toc-num">10</span>Prenosná stanica</a></li>
+      <li><a href="#diagnostika"><span class="toc-num">11</span>Diagnostika</a></li>
+      <li><a href="#limity"><span class="toc-num">12</span>Trvalé limity</a></li>
+      <li><a href="#rhcsa"><span class="toc-num">13</span>RHCSA prienik</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <section class="cat" id="zaklad">
+      <div class="cat-head"><span class="cat-num">00</span><h2>Základná platforma</h2></div>
+      <p class="cat-role">Čo telefón vlastne je: Android/Lineage ostáva hardvérová a telefónna vrstva, pracovné prostredie je natívny plný Kali ARM64 chroot vedľa neho — nie emulátor, nie Termux-rootless.</p>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">Prístup — Terminal</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">NetHunter Terminal appka, priamo <code class="inline">root@kali</code> na telefóne. Najspoľahlivejšia cesta, žiadna sieť netreba.</p>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">Prístup — SSH</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Vzdialený shell z opi, pubkey-only.</p>
+          <pre class="cmd"><span class="prompt">opi$</span> ssh s20-kali  <span class="comment"># root@10.30.0.156, len po odomknutí telefónu</span></pre>
+          <p class="when">sshd v chroote treba po každom reštarte ručne naštartovať: <code class="inline">bootkali ssh start</code> (funguje len keď je CE-encrypted /data odomknuté).</p>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">Prístup — KeX / VNC</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Grafická XFCE plocha. KeX appka (klient) alebo priamo <code class="inline">tigervncserver</code>.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> tigervncserver :1  <span class="comment"># heslo v ~/.config/tigervnc/passwd, potom 192.168.1.199:5901</span></pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">SELinux</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Telefón bootuje <code class="inline">Enforcing</code>. Otvorenie NetHunter appky zámerne prepne na <code class="inline">Permissive</code> kvôli kompatibilite — vedomý kompromis, nie chyba.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cat" id="gui">
+      <div class="cat-head"><span class="cat-num">01</span><h2>NetHunter appka — kompletné GUI menu</h2></div>
+      <p class="cat-role">Oficiálna štruktúra Kali NetHunter appky (2026.2). Appka je len obal/launcher — spravuje chroot zvonka a ponúka rýchle menu na útoky priamo z dotykovej obrazovky, bez písania príkazov. Na tomto telefóne je niekoľko GUI ciest nespoľahlivých (bundled binárky nesedia s custom kernelom) — pri každej položke je poznačené, či je to overené, alebo len štandardná appka funkcia.</p>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">Kali Chroot Manager</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Štart/stop/reset celého Kali chrootu a prístup ku <em>Custom Commands</em> — vlastné príkazy spustené automaticky pri štarte chrootu.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> vždy prvý krok po reštarte telefónu — chroot sám od seba nenabehne, treba ho ručne odštartovať.</p>
+          <ol class="steps">
+            <li>Otvor appku NetHunter → Home</li>
+            <li><em>Kali Chroot Manager</em> → Start</li>
+            <li>Voliteľne: Custom Commands → pridaj príkaz, ktorý sa má spustiť pri každom štarte (napr. <code class="inline">bootkali ssh start</code>)</li>
+          </ol>
+          <p class="when">Toto je jediná cesta na perzistentné spúšťanie démonov (tailscaled, sshd...), pretože z chrootu samotného nie je vidno <code class="inline">/data/adb</code> (Magisk service.d) — boot hook sa odtiaľ pridať nedá.</p>
+        </div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">NetHunter Terminal</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Natívny <code class="inline">root@kali</code> shell priamo v appke — hlavný denný vstupný bod pre všetko z kapitol 02–11 nižšie.</p>
+        </div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">KeX Manager</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Spustenie grafickej XFCE plochy cez appku — GUI alternatíva k ručnému <code class="inline">tigervncserver</code>.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> keď treba GUI nástroj (Wireshark, ZAP, prehliadač) namiesto čistého terminálu, napr. cez KeX na externom monitore/dokku.</p>
+          <ol class="steps">
+            <li>KeX Manager → nastav heslo (len pri prvom spustení)</li>
+            <li>KeX Manager → Start server</li>
+            <li>Otvor KeX klient appku alebo sa pripoj VNC klientom na <code class="inline">:5901</code></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">Wireless Attacks (kalimenu)</span><span class="tag appka">appka</span></div>
+        <div class="tool-body">
+          <p class="what">Textové rýchle menu (kalimenu) nad bežnými WiFi nástrojmi — scan, monitor mode, WPS (Wash/Reaver), deauth — bez písania príkazov.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> rýchly test v teréne bez klávesnice, keď funguje spoľahlivo.</p>
+          <div class="note"><strong>Na S20 nepoužívať.</strong> Vlastné scan tlačidlo appky volá bundled <code class="inline">iw dev wlan2 scan</code> a zasekáva sa v nekonečnej slučke (pozorované ~100s pri 98% CPU, nikdy sa nevráti). Wash položka má natvrdo zapísané <code class="inline">wlan1</code>/<code class="inline">mon0</code> namiesto reálneho <code class="inline">wlan2</code>. Rovnaký scan/wash priamo z terminálu (kapitola 02) beží spoľahlivo za 2-3s.</div>
+        </div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">HID Attacks (DuckHunter)</span><span class="tag appka">appka</span></div>
+        <div class="tool-body">
+          <p class="what">GUI generátor a spúšťač Rubber-Ducky štýl payloadov — telefón sa po pripojení cez USB-C k cieľovému PC vydáva za klávesnicu a odohrá naprogramovanú sekvenciu stlačení (otvorenie terminálu, stiahnutie a spustenie skriptu a pod.).</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> fyzický prístup k odomknutému/nestráženému PC na pár sekúnd — rýchlejšie a nenápadnejšie než USB kľúč, lebo OS vidí len "klávesnicu".</p>
+          <ol class="steps">
+            <li>HID Attacks → vyber/napíš DuckyScript payload</li>
+            <li>Pripoj telefón cez USB-C (OTG) do cieľového PC</li>
+            <li>PC rozpozná telefón ako bežnú USB klávesnicu, appka odohrá sekvenciu automaticky</li>
+          </ol>
+          <p class="when">Appka má <strong>vlastnú, nezávislú</strong> HID logiku (<code class="inline">hid.0</code>+<code class="inline">hid.1</code>) oddelenú od CLI cesty (<code class="inline">filetohid.py</code>, kapitola 08) — appka musí byť zavretá počas CLI testovania, inak si prekážajú o rovnaký gadget.</p>
+          <div class="note ok">HID gadget na nižšej (kernelovej) úrovni je na S20 overený end-to-end cez CLI — appka nad tým istým gadgetom by mala fungovať rovnako, samotná appka verzia sa priamo netestovala.</div>
+        </div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">BadUSB MITM Attack</span><span class="tag appka">appka</span></div>
+        <div class="tool-body">
+          <p class="what">Telefón sa po zapojení cez USB-C vydáva cieľovému PC za USB Ethernet/RNDIS adaptér. PC ho začne používať ako (jednu z) sieťových ciest a všetka prevádzka, čo cez neho ide, sa dá sniffovať/upravovať priamo na telefóne.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> fyzický prístup k PC, chceš MITM bez toho, aby si sa musel dostať do Wi-Fi/LAN siete obete — funguje aj keď je PC úplne izolované od tvojej siete.</p>
+          <ol class="steps">
+            <li>USB Arsenal → nastav funkciu na Ethernet/RNDIS (alebo priamo BadUSB MITM menu)</li>
+            <li>Pripoj telefón cez USB-C do cieľa, počkaj kým OS nainštaluje "sieťovú kartu"</li>
+            <li>Na telefóne spusti sniffing/MITM nástroj (napr. bettercap/MITM Framework) nad novým rozhraním</li>
+          </ol>
+          <div class="note"><strong>Na S20 nedostupné.</strong> Kernel patch pre USB NCM/RNDIS gadget je hotový a overený funkčný na úrovni jadra, ale Android framework (<code class="inline">UsbService.setCurrentFunctions</code>) explicitne odmieta kombináciu adb+rndis (<code class="inline">IllegalArgumentException</code>) — vedomé policy rozhodnutie v OS, nie kernel bug, nedá sa obísť zvnútra chrootu.</div>
+        </div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">MITM Framework</span><span class="tag appka">appka</span></div>
+        <div class="tool-body">
+          <p class="what">Appka nad ARP spoofing + traffic injection/sniffing nástrojom (sslstrip-štýl) — keď je telefón pripojený do tej istej WiFi/LAN ako obeť, vie sa vsunúť medzi obeť a router: zachytávať heslá, injektovať JavaScript/HTML do stránok, sťahovať obrázky z prehliadanej prevádzky.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> si v rovnakej sieti ako cieľ (napr. hosťovská WiFi na povolenom teste) a chceš vidieť/upraviť jeho nešifrovanú prevádzku.</p>
+          <ol class="steps">
+            <li>Pripoj sa do cieľovej siete (interná karta stačí, monitor mode netreba)</li>
+            <li>MITM Framework → zvoľ obeť (IP) a metódu (sniff / JS inject / img capture / replace)</li>
+            <li>Spusti — appka spraví ARP spoofing a preposiela/upravuje prevádzku obete</li>
+          </ol>
+          <p class="when">Na HTTPS prevádzku má obmedzený dosah (moderné stránky majú HSTS) — najsilnejšie na nešifrovaný HTTP alebo zle nakonfigurované vnútorné appky.</p>
+        </div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">USB Arsenal</span><span class="tag appka">appka</span></div>
+        <div class="tool-body">
+          <p class="what">Spoločný konfigurátor USB gadget funkcií, ktoré appka vyššie využívajú — HID (klávesnica), mass storage (USB disk), Ethernet/NCM/RNDIS, sériová konzola (ACM). Prepína, čím sa telefón hostovi predstaví po zapojení.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> mass storage režim na rýchlu exfiltráciu/prenos súborov cez fyzické USB (bez WiFi), alebo príprava gadgetu pred HID/BadUSB útokom vyššie.</p>
+          <div class="note"><strong>Mass storage a UVC video na S20 zatiaľ nefunkčné.</strong> <code class="inline">mkdir</code> na novú <code class="inline">mass_storage</code> function v ConfigFS zlyhá s ENOENT — driver vôbec nie je v kerneli (<code class="inline">CONFIG_USB_F_MASS_STORAGE</code> chýba, checklist #924). ACM (sériová konzola) je naopak overená a funkčná — pozri kapitolu 08.</div>
+        </div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">Bluetooth Arsenal</span><span class="tag hw">potrebuje HW</span></div>
+        <div class="tool-body">
+          <p class="what">Sada BT recon a spoofing nástrojov (skenovanie okolitých zariadení, zmena vlastnej BT identity/mena, prípadne HCI-level injection).</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> prieskum BT zariadení v okolí, test na BT-based prístupové systémy.</p>
+          <p class="when">Injection-štýl funkcie potrebujú špeciálny externý BT adaptér s podporou raw HCI zápisu — interný BT čip telefónu to nezvládne. Na S20 sa zatiaľ takýto adaptér nepripájal, funkcia neotestovaná. Základné <code class="inline">hciconfig</code>/<code class="inline">hcitool</code> scanning ale funguje (kapitola 07).</p>
+        </div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">Nmap Scan</span><span class="tag appka">appka</span></div>
+        <div class="tool-body">
+          <p class="what">Rýchly GUI spúšťač nmap skenu na zadaný cieľ/rozsah — skratka pre bežné <code class="inline">nmap</code> príkazy bez otvárania terminálu.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> rýchla orientácia v novej sieti (čo tam žije, aké porty), keď nechceš písať plný príkaz. Pre čokoľvek zložitejšie (custom skripty, timing, output formát) je terminál (kapitola 05) presnejší.</p>
+        </div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">Searchsploit</span><span class="tag appka">appka</span></div>
+        <div class="tool-body">
+          <p class="what">GUI vyhľadávanie v lokálnej (offline) kópii Exploit-DB podľa produktu/verzie.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> po <em>nmap</em> skene zistíš presnú verziu služby (napr. <code class="inline">vsftpd 2.3.4</code>) a chceš hneď vedieť, či na ňu existuje známy exploit — funguje aj bez internetu.</p>
+        </div>
+      </div>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">Wardriving toggle</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Jediný prepínač <em>Android GPS Provider</em>, ktorý naštartuje celý wardriving reťazec (posiela NMEA cez UDP 10110 do gpsd v chroote). Detail v kapitole 03.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cat" id="wifi">
+      <div class="cat-head"><span class="cat-num">02</span><h2>Wi-Fi útoky a monitoring</h2></div>
+      <p class="cat-role">Interná Broadcom karta zvláda len managed/AP — žiadny monitor mode ani injection. Všetka reálna WiFi práca ide cez externý adaptér <strong>Edimax EW-7711UTn</strong> (Ralink RT3070) na <code class="inline">wlan2</code>, driver (rt2800usb) bolo treba doplniť do vlastného kernelu.</p>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">aircrack-ng suite</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Základná sada pre monitor mode, packet capture a injection — <code class="inline">airmon-ng</code> (prepnutie karty do monitor mode), <code class="inline">airodump-ng</code> (zachytávanie), <code class="inline">aireplay-ng</code> (deauth/injection), <code class="inline">aircrack-ng</code> (cracking WEP/WPA handshake zo súboru).</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> základ pre skoro každý WiFi test — najprv monitor mode, potom capture, potom podľa cieľa deauth alebo len pasívne počúvanie.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> airmon-ng start wlan2
+<span class="prompt">kali$</span> airodump-ng wlan2  <span class="comment"># zoznam okolitých sietí a klientov</span>
+<span class="prompt">kali$</span> airodump-ng -c &lt;kanál&gt; --bssid &lt;BSSID&gt; -w capture wlan2  <span class="comment"># zachytávanie handshake</span>
+<span class="prompt">kali$</span> aireplay-ng --deauth 5 -a &lt;BSSID&gt; wlan2  <span class="comment"># vynúť reconnect (zachytenie handshake)</span></pre>
+          <ol class="steps">
+            <li><code class="inline">airmon-ng start wlan2</code> — karta do monitor mode</li>
+            <li><code class="inline">airodump-ng wlan2</code> — nájdi cieľovú sieť a kanál</li>
+            <li><code class="inline">airodump-ng -c ... -w capture wlan2</code> — zbieraj na presnom kanáli/BSSID</li>
+            <li>voliteľne <code class="inline">aireplay-ng --deauth</code> — urýchli handshake capture</li>
+            <li><code class="inline">aircrack-ng capture-01.cap -w rockyou.txt</code> — cracking offline</li>
+          </ol>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">wifite2</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Automatizovaný WPA/WPS cracker — orchestruje aircrack-ng, reaver, bully a hashcat dokopy bez ručného prepínania nástrojov.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> chceš prejsť všetky dosiahnuteľné siete naraz a nechať nástroj samostatne skúsiť najsľubnejší útok na každú (WPS PIN, handshake capture, PMKID) namiesto ručného aircrack-ng workflow.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> wifite  <span class="comment"># zsh wrapper automaticky doplní -i wlan2</span>
+<span class="prompt">kali$</span> wifite --wpa  <span class="comment"># len WPA handshake útoky, preskoč WPS</span></pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">wash / reaver / bully</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what"><code class="inline">wash</code> — scanning AP s aktívnym WPS. <code class="inline">reaver</code>/<code class="inline">bully</code> — brute-force WPS PIN (2 nezávislé implementácie rovnakého útoku).</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> router má zapnuté WPS (starší/lacnejší HW ho stále má defaultne zapnuté) — WPS PIN sa dá uhádnuť oveľa rýchlejšie než WPA heslo.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> wash -i wlan2  <span class="comment"># nájdi AP s WPS</span>
+<span class="prompt">kali$</span> reaver -i wlan2 -b &lt;BSSID&gt; -vv</pre>
+          <div class="note"><strong>Nepoužívať kalimenu → Wireless Attacks → Wash</strong> — na tomto telefóne je natvrdo rozbité (hardcoded wlan1/mon0). Vždy priamo z terminálu.</div>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">hcxdumptool / hcxtools</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Modernejšia alternatíva k airodump-ng handshake capture — vie zachytiť aj PMKID bez potreby klienta na sieti (niektoré routery ho posielajú aj bez pripojeného klienta).</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> cieľová sieť nemá práve pripojených klientov (klasický deauth+handshake postup nefunguje) — PMKID cesta obíde túto podmienku.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> hcxdumptool -i wlan2 -o capture.pcapng --enable_status=1
+<span class="prompt">kali$</span> hcxpcapngtool capture.pcapng -o hash.hc22000</pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">hashcat</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Offline cracking zachytených handshake/PMKID hashov, s GPU/CPU akceleráciou. Vedomá náhrada za Pyrit (dlho mŕtvy upstream projekt).</p>
+          <pre class="cmd"><span class="prompt">kali$</span> hashcat -m 22000 hash.hc22000 rockyou.txt</pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">mdk3 / mdk4</span><span class="tag repo">kali repo</span></div>
+        <div class="tool-body">
+          <p class="what">Hromadné WiFi rušenie — deauth flood proti celej oblasti (nie len jednému klientovi) a beacon flood (vysielanie tisícok falošných SSID, aby zahltil okolité skenery).</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> test odolnosti/monitoring reakcie na plošné rušenie (WIDS/WIPS testovanie) — deštruktívnejší nástroj, len s výslovným povolením na test.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> mdk4 wlan2 d  <span class="comment"># plošný deauth mode</span></pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">mana toolkit</span><span class="tag repo">kali repo</span></div>
+        <div class="tool-body">
+          <p class="what">Evil-AP/rogue-AP sada — vytvorí falošný prístupový bod, ktorý napodobňuje okolité siete (aj cez karma-štýl automatické odpovedanie na probe requesty obetí), zachytáva prihlasovacie údaje cez captive portal.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> test, či sa zariadenia/ľudia v okolí pripoja na falošnú "otvorenú" sieť namiesto tej legitímnej — klasický social-engineering + WiFi test.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> systemctl start mana-toolkit  <span class="comment"># alebo ./run-mana.sh podľa balíka</span></pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">hostapd (rogue AP)</span><span class="tag repo">kali repo</span></div>
+        <div class="tool-body">
+          <p class="what">Ručné postavenie vlastného prístupového bodu (bez karma automatiky mana toolkitu) — plná kontrola nad SSID/šifrovaním, typicky v kombinácii s <code class="inline">dnsmasq</code> pre DHCP/DNS.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> hostapd /etc/hostapd/hostapd.conf</pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">airgeddon</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">All-in-one WiFi menu nad väčšinou nástrojov vyššie (evil twin, WPS, handshake capture, DoS) — jedno miesto namiesto ručného skladania príkazov.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> airgeddon  <span class="comment"># beží v tmux — chroot nemá X11/Wayland, xterm mód bol preto opravený</span></pre>
+        </div>
+      </div>
+      <div class="note"><strong>Limit:</strong> NetHunter appkine vlastné WiFi scan tlačidlo (GUI, nie terminál) sa zasekáva v nekonečnej slučke — bug v bundled <code class="inline">iw</code> binárke. Reálna práca vždy cez terminál.</div>
+    </section>
+
+    <section class="cat" id="wardriving">
+      <div class="cat-head"><span class="cat-num">03</span><h2>Wardriving a GPS</h2></div>
+      <p class="cat-role">Pasívne mapovanie okolitých sietí s GPS súradnicami.</p>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">Kismet</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Pasívny WiFi/Bluetooth wardriving scanner s GPS mapovaním nálezov — na rozdiel od airodump-ng beží kontinuálne na pozadí a loguje všetko okolo teba počas pohybu.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> mapovanie WiFi pokrytia/hustoty v teréne (napr. audit vlastnej budovy — kde všade uniká signál von), nie cielený útok na jednu sieť.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> kismet --use-gpsd-gps</pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">gpsd</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Most medzi Android GPS súradnicami a Kismetom/ostatnými nástrojmi v chroote.</p>
+          <p class="when">Zdroj: appka → Wardriving → toggle <em>Android GPS Provider</em> (posiela NMEA cez UDP 10110). gpsd to číta na TCP 2947.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> gpspipe -r  <span class="comment"># over že dáta tečú</span>
+<span class="prompt">kali$</span> ss -tln | grep 2947</pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">WiGLE</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Natívna Android appka (<code class="inline">net.wigle.wigleandroid</code>), nezávislá od chrootu — nahráva nálezy do komunitnej databázy wardriving máp.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cat" id="sdr">
+      <div class="cat-head"><span class="cat-num">04</span><h2>Rádio / SDR</h2></div>
+      <p class="cat-role">RTL-SDR dongle (RTL2838, tuner Fitipower FC0013) — príjem širokého frekvenčného pásma.</p>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">rtl-sdr sada</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what"><code class="inline">rtl_test</code>, <code class="inline">rtl_sdr</code>, <code class="inline">rtl_fm</code>, <code class="inline">rtl_power</code>, <code class="inline">rtl_tcp</code> a ďalšie.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> prieskum rádiového spektra v okolí (garážové brány, meteostanice, IoT senzory na 433/868MHz, letecká/FM komunikácia) — pasívny príjem, nič sa nevysiela.</p>
+          <p class="when">Wrapper skripty v <code class="inline">/usr/local/bin/</code> — v pozadí custom-skompilovaný <code class="inline">libusb-1.0.27 --disable-udev</code>, lebo Android chroot nemá reálny udev daemon (systémový libusb enumeráciu ticho zlyhá).</p>
+          <pre class="cmd"><span class="prompt">kali$</span> rtl_test -t  <span class="comment"># Found 1 device: Realtek RTL2838UHIDIR</span>
+<span class="prompt">kali$</span> rtl_fm -f 100.5M | aplay -r 24k -f S16_LE  <span class="comment"># FM demodulácia naživo</span>
+<span class="prompt">kali$</span> rtl_power -f 400M:470M:1k -i 60 scan.csv  <span class="comment"># spektrálne skenovanie pásma</span></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="cat" id="siet">
+      <div class="cat-head"><span class="cat-num">05</span><h2>Sieťový prieskum a exploitácia</h2></div>
+      <p class="cat-role">Zosúladené s toolkitom na victuse (~/Ops/security-lab) — čo tam bolo len ručný git-clone, tu je priamo v Kali apt repe.</p>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">nmap</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Skenovanie portov, služieb a ich verzií.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> prvý krok skoro každého sieťového testu — zisti, čo v sieti/na hoste vôbec beží, predtým než skúšaš čokoľvek cielené.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> nmap -sV -p- &lt;cieľ&gt;  <span class="comment"># všetky porty + verzie služieb</span>
+<span class="prompt">kali$</span> nmap -sn 192.168.1.0/24  <span class="comment"># rýchly ping-sweep celej siete</span></pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">Metasploit + Armitage</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Exploitačný framework (6.5.0-dev) s tisíckami hotových modulov, a jeho grafická nadstavba Armitage.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> po nmape/searchsploite si našiel konkrétnu zraniteľnú verziu služby a chceš ju otestovať hotovým, overeným exploit modulom namiesto písania vlastného.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> msfconsole
+msf6&gt; search type:exploit &lt;produkt&gt;
+msf6&gt; use &lt;exploit/.../modul&gt;
+msf6&gt; set RHOSTS &lt;cieľ&gt;
+msf6&gt; run</pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">sqlmap</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Automatizovaná detekcia a exploitácia SQL injection — vie sám vyskúšať desiatky techník (union, blind, time-based) a následne aj vytiahnuť dáta z DB.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> web appka má formulár/parameter, čo vyzerá, že ide priamo do SQL query bez sanitizácie.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> sqlmap -u "&lt;url&gt;?id=1" --batch
+<span class="prompt">kali$</span> sqlmap -u "&lt;url&gt;?id=1" --batch --dbs  <span class="comment"># vypíš dostupné databázy</span></pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">impacket</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Python sada na SMB/Windows protokoly — <code class="inline">psexec.py</code> (vzdialené spustenie príkazu s platnými credentials), <code class="inline">secretsdump.py</code> (výpis hashov z SAM/NTDS), <code class="inline">GetUserSPNs.py</code> (Kerberoasting) a ďalšie.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> máš platné (aj len lokálne admin) credentials do Windows/AD prostredia a chceš postúpiť ďalej (lateral movement, dump hashov).</p>
+          <pre class="cmd"><span class="prompt">kali$</span> impacket-psexec 'DOMAIN/user:pass@&lt;cieľ&gt;'</pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">Responder</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">LLMNR/NBT-NS/MDNS poisoning — odpovedá na broadcast DNS dotazy skôr než legitímny DNS server, zachytáva NTLM hashe pri pokusoch o pripojenie.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> si v Windows LAN sieti (typicky firemné prostredie) — preklepy v názvoch zdieľaní generujú LLMNR broadcast, ktorý Responder zneužije.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> responder -I wlan2</pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">netexec</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Nástupca crackmapexec (ten je upstream mŕtvy) — hromadné testovanie a laterálny pohyb cez SMB/WinRM/SSH naraz na celom rozsahu.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> máš jedny credentials (napr. z Responderu) a chceš rýchlo zistiť, na koľkých strojoch v sieti fungujú (password spraying/reuse).</p>
+          <pre class="cmd"><span class="prompt">kali$</span> nxc smb &lt;rozsah&gt;/24 -u user -p pass</pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">hydra</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Brute-force prihlásenia proti desiatkam protokolov (SSH/FTP/HTTP/RDP/...).</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> test na slabé/predvolené heslá na jednej konkrétnej službe.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> hydra -l user -P rockyou.txt ssh://&lt;cieľ&gt;</pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">gobuster / ffuf</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Fuzzing webových ciest, adresárov a parametrov — skúša tisíce názvov zo slovníka a hlási, čo skutočne existuje (200/301 namiesto 404).</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> web appka nemá verejný sitemap, hľadáš skryté admin panely, zálohy, API endpointy.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> ffuf -u http://&lt;cieľ&gt;/FUZZ -w wordlist.txt
+<span class="prompt">kali$</span> gobuster dir -u http://&lt;cieľ&gt; -w wordlist.txt</pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">proxychains4 / tor</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Routovanie ostatných nástrojov cez proxy alebo Tor.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> potrebuješ, aby nástroj (napr. nmap) šiel cez konkrétnu proxy/pivot namiesto priamo z telefónu.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> proxychains4 nmap -sT &lt;cieľ&gt;</pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">bettercap</span><span class="tag repo">kali repo</span></div>
+        <div class="tool-body">
+          <p class="what">Švajčiarsky nôž na sieťové útoky — ARP/DNS spoofing, MITM, sniffing, WiFi/BLE recon — pohonná jednotka, na ktorej je postavené aj GUI <em>MITM Framework</em> vyššie.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> chceš robiť to isté čo appkine MITM Framework menu, ale s plnou kontrolou (skriptovateľné, caplets) namiesto obmedzeného GUI.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> bettercap -iface wlan2</pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">wordlisty</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">rockyou.txt (14,3M riadkov) + SecLists (1,9GB), stiahnuté priamo na telefón — ani opi ani victus ich mali prekvapivo pripravené.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cat" id="web">
+      <div class="cat-head"><span class="cat-num">06</span><h2>Web aplikácie</h2></div>
+      <p class="cat-role">Testovanie webových aplikácií — doinštalované priamo z Kali repa, aby sedelo s tým, čo je na victuse.</p>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">OWASP ZAP</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Proxy/scanner na zraniteľnosti webových appiek (balík <code class="inline">zaproxy</code>) — automatický aj manuálny (proxy medzi tebou a appkou) režim.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> plošný audit webovej appky pred nasadením/po zmene — automatický scan nájde bežné triedy zraniteľností (XSS, injection, misconfig).</p>
+          <pre class="cmd"><span class="prompt">kali$</span> zaproxy  <span class="comment"># GUI cez KeX/VNC</span></pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">wpscan</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">WordPress-špecifický scanner — pluginy, témy, používateľské mená, zastarané verzie so známymi CVE.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> cieľ beží na WordPress — obrovská časť malých firemných webov, väčšina reálnych zraniteľností je v pluginoch, nie v jadre.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> wpscan --url &lt;cieľ&gt; --enumerate p,u</pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">nikto</span><span class="tag repo">kali repo</span></div>
+        <div class="tool-body">
+          <p class="what">Rýchly, "hlučný" webserver scanner — zastarané verzie softvéru, nebezpečné súbory, chýbajúce security headery.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> prvý rýchly prejazd cez webserver pred hĺbkovejším ZAP/manuálnym testom (sekundy až minúty, nie hodiny).</p>
+          <pre class="cmd"><span class="prompt">kali$</span> nikto -h &lt;cieľ&gt;</pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="cat" id="bluetooth">
+      <div class="cat-head"><span class="cat-num">07</span><h2>Bluetooth</h2></div>
+      <p class="cat-role">Funguje vďaka dvom vlastným kernel patchom — opravený crash v <code class="inline">hci_sock.c</code> a odstránený nekompatibilný event-filter príkaz, ktorý CSR8510 dongle nezvládal.</p>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">hciconfig / hcitool</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Základná BT diagnostika a scanning zariadení.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> prieskum BT zariadení v dosahu — telefóny, slúchadlá, IoT senzory, prístupové systémy.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> hciconfig hci0 up
+<span class="prompt">kali$</span> hcitool scan</pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">btscanner / spooftooph</span><span class="tag hw">potrebuje HW</span></div>
+        <div class="tool-body">
+          <p class="what">Hlbší BT recon (btscanner) a zmena vlastnej BT identity — MAC/mena (spooftooph), na obídenie zariadení, čo dôverujú konkrétnemu spárovanému menu/adrese.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> test BT-based prístupového systému, ktorý dôveruje konkrétnemu spárovanému zariadeniu — over, či sa dá jeho identita naklonovať.</p>
+          <p class="when">Súčasť Bluetooth Arsenal appky (kapitola 01) — na S20 netestované, potrebuje externý HCI-schopný adaptér.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cat" id="hid">
+      <div class="cat-head"><span class="cat-num">08</span><h2>USB HID / fyzické útoky (CLI)</h2></div>
+      <p class="cat-role">Telefón sa vie vydávať za USB periférie po pripojení do cudzieho počítača — surová CLI vrstva pod appkinými menu z kapitoly 01.</p>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">ConfigFS HID gadget</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Telefón sa hostu predstaví ako USB klávesnica (BadUSB/Rubber Ducky štýl) a reálne doručí stlačenia klávesov — overené end-to-end cez wire-level capture.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> to isté ako appkine HID Attacks (kapitola 01), ale s plnou kontrolou nad payloadom namiesto GUI generátora.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> python3 filetohid.py &lt;payload&gt;</pre>
+          <p class="when">NetHunter appka má vlastnú, nezávislú HID logiku — musí byť zatvorená pri testovaní cez CLI.</p>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">ACM sériová konzola</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Núdzový sériový prístup telefón → opi, funguje aj keď zlyhá SSH aj ADB. Súvisí so SysRq/REISUB núdzovým reštart plánom.</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> telefón sa nedá odchytiť cez sieť (SSH/ADB spadli) — fyzický USB kábel do opi zostáva posledná cesta.</p>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">"Švajčiarsky nôž" gadget</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Trvalo nakonfigurovaná kombinácia ADB+HID+ACM naraz, cez Termux:Boot — prežije reštart telefónu, netreba ručne znova nastavovať po každom reboote.</p>
+        </div>
+      </div>
+      <div class="note"><strong>Limit:</strong> USB network gadget (zdieľanie internetu cez NCM/RNDIS) funguje na úrovni jadra, ale Android framework explicitne odmieta kombináciu adb+rndis — vedomé rozhodnutie v OS, nie kernel bug, nedá sa obísť zvnútra.</div>
+    </section>
+
+    <section class="cat" id="kontajnery">
+      <div class="cat-head"><span class="cat-num">09</span><h2>Kontajnery</h2></div>
+      <p class="cat-role">Izolované testovacie prostredie priamo v chroote.</p>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">Podman</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Beh kontajnerov bez rootless daemona (rovnaký nástroj, aký sa učí aj v RHCSA).</p>
+          <p class="when"><strong class="lbl">Kedy:</strong> chceš spustiť nástroj/appku v izolácii bez zaplnenia hlavného chrootu (napr. vyskúšať cudzí Docker image, dočasné testovacie prostredie).</p>
+          <pre class="cmd"><span class="prompt">kali$</span> podman run --rm alpine sh</pre>
+          <p class="when">Vyžadovalo obídenie limitov Android jadra: <code class="inline">no_pivot_root=true</code>, <code class="inline">userns=host</code> (chýba CONFIG_USER_NS), <code class="inline">pidns=private</code>, <code class="inline">net/ipc/uts=host</code>. Zdokumentované priamo v <code class="inline">/etc/containers/containers.conf</code>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cat" id="infra">
+      <div class="cat-head"><span class="cat-num">10</span><h2>Prenosná pracovná stanica</h2></div>
+      <p class="cat-role">Nie útočná výbava — ale to, čo robí telefón reálne použiteľným v teréne, mimo domácej WiFi.</p>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">Tailscale</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">VPN prístup mimo domácej WiFi.</p>
+          <p class="when">Beží v <code class="inline">--tun=userspace-networking</code> móde — kernel-mode tun naráža na rovnaký iptables limit ako nižšie. Treba naštartovať ručne po reštarte (žiadny PID1 systemd v chroote).</p>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">SSH hardening</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what"><code class="inline">AddressFamily inet</code> + <code class="inline">Match Address</code> blok, ktorý pre akýkoľvek neprivátny zdrojový IP vypína autentifikáciu.</p>
+          <p class="when">Kernel-level iptables INSERT do filter tabuľky na tomto custom kerneli nefunguje (NAT tabuľka áno) — presunuté na úroveň sshd configu namiesto firewallu.</p>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">gh, git, Mímir</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Rovnaká git identita ako opi, GitHub CLI, priamy prístup do Mímir API z telefónu (vlastný SSH kľúč na opi na čítanie hesla).</p>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">dotfiles + hhstatus</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">tmux/vim/zsh (eza, bat, fd, ripgrep). Vlastný <code class="inline">hhstatus</code> skript (batéria, teplota, WiFi IP, Tailscale stav) — registrovaný v Sindri.</p>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">Claude Code</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Beží natívne priamo v chroote, vlastné OAuth prihlásenie prenesené z opi.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cat" id="diagnostika">
+      <div class="cat-head"><span class="cat-num">11</span><h2>Diagnostika a systémové triky</h2></div>
+      <p class="cat-role">Prieskum "čo všetko sa dá na tomto systéme spustiť" — hybridný Linux/Android model, nie plná výmena OS.</p>
+
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">andro (nsenter trik)</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Spúšťanie Android system binárok (<code class="inline">dumpsys</code>, <code class="inline">pm</code>, <code class="inline">settings</code>, <code class="inline">wm</code>, <code class="inline">screencap</code>) priamo z Kali chrootu, bez ADB/USB.</p>
+          <p class="when">Kali chroot nemá pripojený <code class="inline">/apex</code> — riešenie je "požičať si" mount namespace bežiaceho <code class="inline">adbd</code> procesu.</p>
+          <pre class="cmd"><span class="prompt">kali$</span> andro dumpsys battery  <span class="comment"># wrapper okolo: nsenter -t &lt;adbd_pid&gt; -m -- dumpsys battery</span></pre>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">Priamy sysfs prístup k senzorom</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Akcelerometer/gyro (LSM6DSO), barometer (LPS22H), svetlo/priblíženie (TMD4907), kompas (AK09916C), vibrátor, baterka — všetko priamo cez sysfs, žiadny Android HAL netreba.</p>
+        </div>
+      </div>
+      <div class="tool">
+        <div class="tool-head"><span class="tool-name">motion-alarm</span><span class="tag overene">overené</span></div>
+        <div class="tool-body">
+          <p class="what">Vlastný skript — pohybový alarm z akcelerometra (baseline + delta threshold, vibrácia pri výchylke, auto-rearm po cooldowne).</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cat" id="limity">
+      <div class="cat-head"><span class="cat-num">12</span><h2>Trvalé limity systému</h2></div>
+      <p class="cat-role">Aby sa nehľadalo dookola to isté — toto sa už skúmalo a je to takto natrvalo, kým sa nezmení kernel.</p>
+      <div class="limits">
+        <ul>
+          <li><strong>Kernel iptables:</strong> INSERT do filter tabuľky ("-j ACCEPT" na existujúci chain) zlyhá "No chain/target/match" — NAT tabuľka funguje bez problémov. Orezaný/nekompletný xtables modul v tomto custom kerneli.</li>
+          <li><strong>Žiadny CONFIG_USER_NS</strong> — kontajnery musia bežať s <code class="inline">userns=host</code>.</li>
+          <li><strong>Žiadny PID1 systemd v chroote</strong> — všetky démony (tailscaled, sshd, gpsd...) sa štartujú ručne alebo cez Magisk service.d / NetHunter Custom Commands, nič neprežije reštart automaticky.</li>
+          <li><strong>GPU/Vulkan nedostupné z Kali strany</strong> — chýba <code class="inline">/dev/dri</code>, renderovanie ide len cez Androidov proprietárny <code class="inline">libmali.so</code> blob.</li>
+          <li><strong>Interná WiFi karta (Broadcom):</strong> managed/AP/P2P áno, monitor mode nie — vždy treba externý adaptér.</li>
+          <li><strong>USB mass storage a UVC video gadget:</strong> chýbajúce kernel drivery (<code class="inline">CONFIG_USB_F_MASS_STORAGE</code>, <code class="inline">CONFIG_USB_VIDEO_CLASS</code>) — čaká na rebuild, checklist #924/#923.</li>
+          <li><strong>USB NCM/RNDIS (zdieľanie siete cez USB):</strong> kernel-level funguje, Android framework to explicitne blokuje v kombinácii s adb.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="cat" id="rhcsa">
+      <div class="cat-head"><span class="cat-num">13</span><h2>RHCSA prienik</h2></div>
+      <p class="cat-role">Čestné porovnanie — kde táto výbava reálne trénuje niečo, čo sa počíta na RHCSA (podľa osnov RH124/RH134), a kde je to úplne iná zručnosť a treba to cvičiť inde (napr. KVM lab na victuse).</p>
+
+      <div class="tablewrap">
+        <table class="rh">
+          <thead>
+            <tr><th>Skúsenosť zo S20</th><th>RHCSA modul</th><th>Zhoda</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Podman kontajnery, ladenie namespace limitov</td>
+              <td class="modul">RH134 · Run Containers (m20–21)</td>
+              <td class="zhoda"><span class="badge priama">priama</span></td>
+            </tr>
+            <tr>
+              <td>sshd_config Match blocks, AddressFamily</td>
+              <td class="modul">RH124 · Configure and secure SSH (m7–8)</td>
+              <td class="zhoda"><span class="badge priama">priama</span></td>
+            </tr>
+            <tr>
+              <td>SELinux Enforcing/Permissive prepínanie</td>
+              <td class="modul">RH134 · Manage SELinux security (m14–15)</td>
+              <td class="zhoda"><span class="badge ciastocna">čiastočná</span></td>
+            </tr>
+            <tr>
+              <td>iptables/xtables chain diagnostika</td>
+              <td class="modul">RH134 · Manage network security / Firewalld (m19–20)</td>
+              <td class="zhoda"><span class="badge ciastocna">čiastočná</span></td>
+            </tr>
+            <tr>
+              <td>zsh wrapper funkcie, skriptovanie</td>
+              <td class="modul">RH134 · Improve command line productivity (m12)</td>
+              <td class="zhoda"><span class="badge ciastocna">čiastočná</span></td>
+            </tr>
+            <tr>
+              <td>Oprava vlastníctva/práv (xbin 0750 root:shell)</td>
+              <td class="modul">RH124 · Control access to files (m4–5)</td>
+              <td class="zhoda"><span class="badge ciastocna">čiastočná</span></td>
+            </tr>
+            <tr>
+              <td>apt/dpkg balíčky (Kali/Debian)</td>
+              <td class="modul">RH124 · Manage software – DNF (m6)</td>
+              <td class="zhoda"><span class="badge chyba">iný nástroj</span></td>
+            </tr>
+            <tr>
+              <td>Služby a démoni v chroote</td>
+              <td class="modul">RH124 · Monitor and control services and daemons (m5–6)</td>
+              <td class="zhoda"><span class="badge chyba">chýba</span></td>
+            </tr>
+            <tr>
+              <td>Diskové oddiely, LVM</td>
+              <td class="modul">RH134 · Manage basic storage / LVM (m15–17)</td>
+              <td class="zhoda"><span class="badge chyba">chýba</span></td>
+            </tr>
+            <tr>
+              <td>nmcli, statická sieťová konfigurácia</td>
+              <td class="modul">RH124 · Manage networking (m8–9)</td>
+              <td class="zhoda"><span class="badge chyba">chýba</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="color:var(--text-muted); margin-top:20px; max-width:70ch;">
+        <strong>Zhrnutie:</strong> priama zhoda je pri SSH a Podmane — presne tie isté nástroje/konfigy ako na RHEL.
+        Čiastočná zhoda znamená rovnaký spôsob myslenia (diagnostika, práva, firewall pravidlá), ale iný konkrétny nástroj
+        (zsh namiesto bash, iptables-legacy namiesto firewalld/nft, Android FS layout namiesto RHEL). Najväčšie diery —
+        <code class="inline">systemd</code>, <code class="inline">LVM</code>, <code class="inline">dnf</code>, <code class="inline">nmcli</code> —
+        sa na telefóne vôbec netrénujú (chroot nemá PID1 systemd ani diskové oddiely) a treba ich cvičiť na
+        RHCSA KVM labe na victuse.
+      </p>
+    </section>
+
+  </main>
+
+  <footer>
+    Zostavené z Mímir build-notes/progress-log (projekt "S20 Ultra Linux handheld / NetHunter") + oficiálna štruktúra Kali NetHunter appky · stav k 11.8.2026 · needituj priamo, zdroj je Mímir
+  </footer>
+
+</div>
+</body>
+</html>

@@ -65,6 +65,31 @@ Flashing is intentionally outside these scripts. A build artifact is not safe
 to flash until its kernel, DTB, DTBO, boot image layout, and rollback images
 have all been validated for `z3s`.
 
+## Kernel build variants
+
+The kernel went through several incremental builds after the initial
+config-only baseline, each fixing one concrete bug found on-device. All of
+them use the same Docker builder image and firmware inputs
+(`firmware/`, SHA-256-checked by each build script):
+
+- `build-bt-hcisock-fix.sh` — `net/bluetooth/hci_sock.c` had
+  `hci_sock_create/bind/release/ioctl/getname` wrapped in `#if 0` with a
+  stray `return 0` fallback (`hci_sock_create` never called `sk_alloc`),
+  crashing on any `hciconfig` use. Restored.
+- `build-bt-eventfilter-fix.sh` — `bredr_setup()` sent
+  `HCI_OP_SET_EVENT_FLT`, which the CSR8510 dongle used for testing doesn't
+  support ("Unknown HCI Command"); the kernel treated the response as
+  fatal. Removed the redundant command.
+- `build-ncm-fix.sh` — fixed 3 NULL-pointer dereferences in `f_ncm.c`
+  (USB NCM/network gadget). The remaining blocker for `adb`+`rndis`
+  together is an Android framework policy decision
+  (`UsbService.setCurrentFunctions` explicitly rejects that combination),
+  not a kernel bug — tracked as still open.
+- `build-dex-repeater-fix.sh` — the variant currently flashed and running
+  (`uname -r` reports `...st10-nh-z3s-dexfix-...`).
+- `build-final-consolidated.sh` — combines the verified fixes into one
+  kernel.
+
 ## Verified config-only build
 
 The config-only kernel was built successfully on Victus and copied to
@@ -129,6 +154,27 @@ b09756fab7939092bcf7c6242c360022426aa85b435a3285daee36a608bf8880
 The active module is `/data/adb/modules/nethunter` version 1.4.0. The native
 full chroot is `/data/local/nhsystem/kali-arm64`, with `kalifs` pointing to it.
 The older Termux rootless environment under the Termux app data is untouched.
+
+Two more chroot fixes are applied directly against the NetHunter app's own
+scripts (`bootkali_init`/`killkali` under its private, CE-encrypted storage,
+not the Magisk module itself — hence idempotent sed-based fixup scripts
+rather than a source patch against files that can't be packaged ahead of
+time):
+
+- `module-fixes/fix-nethunter-mount-detection.sh` — the app's own mount
+  check (`busybox mountpoint -q "$MNT"`) reports false negatives in this
+  environment; replaced with a direct `/proc/self/mountinfo` grep. Confirmed
+  live and correct via `restart-nethunter-clean-v2.sh`, a verification
+  script that force-unmounts everything, asserts a clean state, restarts
+  the chroot, and asserts exactly one root mount afterward.
+- `module-fixes/add-nethunter-cgroup-mount.sh` — binds Android's
+  `/sys/fs/cgroup` (cgroup2) into the chroot at the same path, needed for
+  any container runtime (Docker/Podman) run inside the Kali chroot.
+
+An earlier attempt at the mount-detection problem (bind-mounting the chroot
+root to itself so `mountpoint -q` would recognize it) was superseded by the
+`/proc/self/mountinfo` approach above — the working version is what's in
+this repo.
 
 LineageOS mounts `/system/xbin` with permissions that prevent the NetHunter app
 UID from traversing the module's original BusyBox symlink. The persistent fix
@@ -288,14 +334,39 @@ SSH access points into the device:
   `module-fixes/99-nethunter-handheld.conf`).
 - Termux (Android host, unprivileged `u0_a*` user), port 8022.
 
+## Field manual
+
+`docs/field-manual.html` is a self-contained (Slovak-language) field guide
+covering day-to-day use once the handheld is built: the full NetHunter app
+GUI menu, Wi-Fi attacks/monitoring, wardriving+GPS, SDR, network recon and
+exploitation, web app testing, Bluetooth, USB HID physical attacks,
+containers, using the phone as a portable workstation, diagnostics, and the
+system's permanent limits. Open it directly in a browser — no build step,
+no external dependencies.
+
 ## Repository layout
 
 - `build-*.sh`, `Dockerfile` — reproducible kernel build environment and
-  build steps (baseline → NetHunter feature kernel → variant builds).
-- `chroot-fixes/`, `module-fixes/` — patches applied inside the Kali chroot
-  and to the NetHunter Magisk module.
+  build steps (baseline → NetHunter feature kernel → per-bug fix variants →
+  final consolidated build).
+- `firmware/` — third-party firmware blobs required by the build scripts
+  (Mali GPU, NPU, `rt2870` Wi-Fi), checksummed by each build script. Not
+  original work — included only so the build scripts are self-contained.
+- `chroot-fixes/`, `module-fixes/` — fixes applied inside the Kali chroot
+  and to the NetHunter Magisk module / app scripts.
 - `device-scripts/` — on-device automation (USB gadget, SSH autostart,
   desktop-hybrid launcher watchdog) pulled from the phone itself.
+- `docs/field-manual.html` — day-to-day usage guide, see above.
 - `screenshots/` — the desktop-hybrid mode running live.
 - `watch-s20-reboots.sh`, `start-s20-monitor-24h.sh` — spontaneous-reboot
   diagnostic logging used during kernel bring-up.
+
+## Reproducing the kernel source tree
+
+The full LineageOS kernel source (`lineage-kernel/`, ~2.3 GB) and the
+official NetHunter Note20 reference (`c2s-reference/`, ~3.6 GB) used
+during development are not included in this repo for size reasons. Clone
+the LineageOS kernel source for `z3s` at commit `88a015858b05` to
+reproduce the baseline; the NetHunter Exynos 990 reference kernel is
+available from Kali NetHunter's own repositories if you want to diff
+against it (again: never flash it directly on `z3s`).
