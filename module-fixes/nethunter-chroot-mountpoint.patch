@@ -1,0 +1,42 @@
+--- data/data/com.offsec.nethunter/scripts/bootkali_init
++++ data/data/com.offsec.nethunter/scripts/bootkali_init
+@@ -37,3 +37,8 @@
+ f_isAllReady() {
+     local FS
++    if ! $BUSYBOX mountpoint -q "$MNT"; then
++        bklog "[-] chroot root is NOT a mountpoint yet."
++        return 1
++    fi
++
+     FS=(proc sys dev dev/pts system sdcard)
+@@ -76,3 +81,12 @@
+ f_mount_fs_to_kali() {
++
++    ######### MAKE CHROOT ROOT A REAL MOUNTPOINT #########
++    # Container runtimes call mount(NULL, "/", MS_PRIVATE|MS_REC). That
++    # fails with EINVAL when chroot(2) starts on a plain directory instead
++    # of a mount root. Bind the directory to itself before adding child
++    # mounts so Podman/Docker can create private mount namespaces.
++    if ! $BUSYBOX mountpoint -q "$MNT"; then
++        $BUSYBOX mount -o bind "$MNT" "$MNT" && bklog "[+] mounted chroot root"
++    fi
+ 
+     $BUSYBOX mount -o remount,suid /data
+--- data/data/com.offsec.nethunter/scripts/killkali
++++ data/data/com.offsec.nethunter/scripts/killkali
+@@ -108,3 +108,15 @@
+ case $res in
++0)
++    bklog "[!] $MNT is a mountpoint"
++    f_dir_umount
++    if $BUSYBOX mountpoint -q "$MNT"; then
++        if $BUSYBOX umount "$MNT"; then
++            bklog "[+] umounted chroot root $MNT"
++        else
++            bklog "[-] failed to umount chroot root $MNT"
++            isAllunmounted=1
++        fi
++    fi
++    ;;
+ 1)
+     bklog "[!] $MNT is NOT a mountpoint"
